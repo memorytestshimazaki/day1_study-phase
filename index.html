@@ -58,7 +58,7 @@ const DAY = 1;
 
 let timeline = [];
 const GAS_URL =
-"https://script.google.com/macros/s/AKfycbykXLPo7yOkRlGzwbBA8leKtM4_Qqq_wF9uLB9GwVDpDaYfkJb47is2StaHIp-OLpiR/exec";
+"https://script.google.com/macros/s/AKfycbwj995Kx89a03AbUmvUfjdOJRjVGAQKiJvt1zoBC6myGpVMduFg2la6dAoUtqiO1CZy/exec";
 
 let participant_id = "";
 let study_start = "";
@@ -99,7 +99,9 @@ timeline.push({
 
         participant_id: participant_id,
 
-        day: DAY
+        day: DAY,
+
+         word_order:  word_order
 
       })
 
@@ -118,7 +120,7 @@ timeline.push({
   type: jsPsychHtmlButtonResponse,
 
   stimulus: `
-    <div class="center-text"
+   <div class="center-text"
          style="font-size:18px; line-height:1.8;">
       これから単語が1語ずつ表示されます。<br>
       後ほどテストを行うので、<br>
@@ -129,7 +131,7 @@ timeline.push({
     </div>
   `,
 
-  choices: ['開始']
+  choices: ['開始する']
 
 });
 
@@ -138,21 +140,22 @@ timeline.push({
 ------------------------ */
 
 let study_words = [
-"嫉妬",
-"損害",
-"下降",
-"患者",
-"感染",
-"物質",
-"空気",
-"国旗",
-"威信",
-"金属",
-"王冠",
-"衣服",
-"親切",
-"賛成",
-"勇敢"
+{id: 1, word: "嫉妬"},
+{id: 2, word: "損害"},
+{id: 3, word: "下降"},
+{id: 4, word: "患者"},
+{id: 5, word: "感染"},
+{id: 6, word: "物質"},
+{id: 7, word: "空気"},
+{id: 8, word: "国旗"},
+{id: 9, word: "威信"},
+{id: 10, word: "金属"},
+{id: 11, word: "王冠"},
+{id: 12, word: "衣服"},
+{id: 13, word: "親切"},
+{id: 14, word: "賛成"},
+{id: 15, word: "勇敢"}
+
 ];
 
 /* ------------------------
@@ -160,13 +163,16 @@ let study_words = [
 ------------------------ */
 
 study_words = jsPsych.randomization.shuffle(study_words);
-
+const word_order = study_words.map((item, index) => ({
+  serial_position: index + 1,
+  word_id: item.id,
+  word: item.word
+}));
 /* ------------------------
    単語提示フェーズ
 ------------------------ */
 
-study_words.forEach(function(word){
-
+study_words.forEach(function(item, index){
   /* 注視点 ＋ */
 
   timeline.push({
@@ -195,13 +201,18 @@ study_words.forEach(function(word){
     stimulus: `
       <div class="center-text"
            style="font-size:100px;">
-        ${word}
+        ${item.word}
       </div>
     `,
 
     choices: "NO_KEYS",
 
-    trial_duration: 5000
+    trial_duration: 5000,
+     data: {
+      word_id: item.id,
+      word: item.word,
+      serial_position: index + 1
+    }
 
   });
 
@@ -218,7 +229,7 @@ timeline.push({
   stimulus: `
     <div class="center-text"
          style="font-size:18px; line-height:1.8;">
-     ご協力ありがとうございました。<br><br>
+      ご協力ありがとうございました。<br><br>
       <b>ブラウザの「戻る」操作を行い、<br>
         前のアンケート画面に戻ってください。</b><br>
       （戻るボタンやスワイプ操作など、<br>
